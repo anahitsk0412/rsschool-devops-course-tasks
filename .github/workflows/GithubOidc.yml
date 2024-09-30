@@ -35,8 +35,8 @@ jobs:
       - name: Configure AWS credentials using OpenIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_DEV_GITHUB_ACTION_ROLE }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ vars.AWS_DEV_GITHUB_ACTION_ROLE }}
+          aws-region: ${{ vars.AWS_REGION }}
       
       - name: Debug AWS credentials
         run: |
