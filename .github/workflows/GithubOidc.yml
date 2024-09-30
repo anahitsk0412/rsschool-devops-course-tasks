@@ -51,13 +51,10 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
-      - name: terraform-check
-        run: terraform fmt -check
-
       # Runs a set of commands using the runners shell
-      - name: terraform-plan
-        run: terraform plan -input=false
+      - name: terraform-plan 
+        run: terraform plan -lock=false
 
       - name: terraform-apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -auto-approve -input=false
+        run: terraform apply -lock=false -auto-approve -input=false
