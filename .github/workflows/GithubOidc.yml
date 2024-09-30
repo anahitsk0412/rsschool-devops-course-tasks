@@ -36,6 +36,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: "arn:aws:iam::229535137990:role/GithubActionsRole"
+          role-session-name: github-actions-session
           aws-region: "us-east-1"
       
       - name: Debug AWS credentials
