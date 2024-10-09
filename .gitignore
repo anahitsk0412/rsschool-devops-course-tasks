@@ -1,0 +1,12 @@
+# Local IDE files
+./.idea
+.idea
+
+# / Sensitive values
+*.tfvars
+
+# Local .terraform directories
+.terraform/
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
