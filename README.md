@@ -1,2 +1,2 @@
 # rsschool-devops-course-tasks
-DevOps course
+DevOps course definiation
