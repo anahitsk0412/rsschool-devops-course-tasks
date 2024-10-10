@@ -58,4 +58,10 @@ jobs:
       - name: terraform-apply
         run: terraform apply -auto-approve -refresh-only
         working-directory: ./backend-setup
+      - name: Set IAM Role ARN as Secret
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          role_arn=$(terraform output -raw github_actions_role_arn)
+          echo $role_arn | gh secret set IAM_ROLE_ARN -b
     
