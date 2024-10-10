@@ -33,10 +33,10 @@ jobs:
       - name: Debug AWS credentials
         run: aws sts get-caller-identity
 
-      - name: Change directory to Setup
-        run: |
-          cd backend-setup
-          ls -la
+      # - name: Change directory to Setup
+      #   run: |
+      #     cd backend-setup
+      #     ls -la
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -45,6 +45,7 @@ jobs:
 
       - name: Terraform Init
         run: terraform init
+        working-directory: ./backend-setup
 
       - name: terraform-check
         run: terraform fmt -check
