@@ -52,6 +52,7 @@ jobs:
 
       - name: terraform-apply
         run: |
+          terraform apply -target=aws_iam_role.github_actions_role -auto-approve && \
           terraform apply -auto-approve -refresh-only
         working-directory: ./backend-setup
 

@@ -37,9 +37,6 @@ resource "aws_iam_role_policy_attachment" "github_actions_policy" {
   policy_arn = each.value
 }
 
-output "github_actions_role_arn" {
-  value = aws_iam_role.github_actions_role.arn
-}
 
 
 # arn:aws:iam::229535137990:role/GithubActionsRole

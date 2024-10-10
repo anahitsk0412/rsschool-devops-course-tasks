@@ -30,3 +30,7 @@ resource "aws_dynamodb_table" "terraform_locks" {
   }
 
 }
+
+module "iam_role" {
+  source = "./modules/iam_role"
+}
