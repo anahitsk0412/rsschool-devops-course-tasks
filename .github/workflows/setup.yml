@@ -61,5 +61,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           role_arn=$(terraform output -raw github_actions_role_arn)
-          echo $role_arn | gh secret set IAM_ROLE_ARN -b
+          echo "IAM_ROLE_ARN=$(terraform output -raw iam_role_arn)" >> $GITHUB_ENV
     
