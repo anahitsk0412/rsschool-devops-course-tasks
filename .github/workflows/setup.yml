@@ -33,11 +33,6 @@ jobs:
       - name: Debug AWS credentials
         run: aws sts get-caller-identity
 
-      # - name: Change directory to Setup
-      #   run: |
-      #     cd backend-setup
-      #     ls -la
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
@@ -52,13 +47,13 @@ jobs:
         working-directory: ./backend-setup
          
       - name: terraform-plan
-        run: terraform plan -out=tfplan
+        run: terraform plan
         working-directory: ./backend-setup
 
       - name: terraform-apply
         run: terraform apply -auto-approve -refresh-only
         working-directory: ./backend-setup
-        
+
       - name: Set IAM Role ARN as Secret
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
