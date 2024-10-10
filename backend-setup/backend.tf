@@ -8,7 +8,7 @@ resource "aws_s3_bucket" "rsschool-devops-tf" {
   }
 
   tags = {
-    Name        = "Terraform State Bucket"
+    Name = "Terraform State Bucket"
     Environment = "Dev"
   }
 }
