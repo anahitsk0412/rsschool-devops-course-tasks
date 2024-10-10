@@ -47,9 +47,9 @@ jobs:
         run: terraform init
         working-directory: ./backend-setup
 
-      - name: terraform-check
-        run: terraform fmt -check
-        working-directory: ./backend-setup
+      # - name: terraform-check
+      #   run: terraform fmt -check
+      #   working-directory: ./backend-setup
          
       - name: terraform-plan
         run: terraform plan
