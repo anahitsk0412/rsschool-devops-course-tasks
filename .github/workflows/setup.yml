@@ -51,7 +51,9 @@ jobs:
         working-directory: ./backend-setup
 
       - name: terraform-apply
-        run: terraform apply -auto-approve -refresh-only
+        run: |
+          terraform apply -target=aws_iam_role.github_actions_role && \
+          terraform apply -auto-approve -refresh-only
         working-directory: ./backend-setup
 
       - name: Set IAM Role ARN as Secret
