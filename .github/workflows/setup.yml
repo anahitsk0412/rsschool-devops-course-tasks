@@ -52,10 +52,10 @@ jobs:
         working-directory: ./backend-setup
          
       - name: terraform-plan
-        run: terraform plan
+        run: terraform plan -out=tfplan
         working-directory: ./backend-setup
 
       - name: terraform-apply
-        run: terraform apply -auto-approve
+        run: terraform apply -auto-approve tfplan
         working-directory: ./backend-setup
     
