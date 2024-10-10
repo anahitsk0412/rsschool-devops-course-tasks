@@ -19,7 +19,6 @@ jobs:
       id-token: write
       contents: read
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -34,14 +33,15 @@ jobs:
       - name: Debug AWS credentials
         run: aws sts get-caller-identity
 
+      - name: Change directory to Setup
+        run: |
+          cd backend-setup
+          ls -la
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.9.6
-      
-      - name: Change directory to Setup
-        run: ls -la
-        working-directory: "./backend-setup"
 
       - name: Terraform Init
         run: terraform init
