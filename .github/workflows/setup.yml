@@ -1,0 +1,63 @@
+name: Initial Setup of Environment
+
+on:
+  # push:
+  #   branches: [ "main" ]
+  # pull_request:
+  #   branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  OpenId-Connector:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      
+      - name: Debug AWS credentials
+        run: aws sts get-caller-identity
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.9.6
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./backend-setup
+
+      - name: terraform-check
+        run: terraform fmt -check
+        working-directory: ./backend-setup
+         
+      - name: terraform-plan
+        run: terraform plan
+        working-directory: ./backend-setup
+
+      - name: terraform-apply
+        run: terraform apply -auto-approve
+        working-directory: ./backend-setup
+
+      # - name: Set IAM Role ARN as Secret
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     role_arn=$(terraform output -raw github_actions_role_arn)
+      #     echo "IAM_ROLE_ARN=$(terraform output -raw iam_role_arn)" >> $GITHUB_ENV
+    
