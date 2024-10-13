@@ -3,13 +3,16 @@ resource "aws_s3_bucket" "rsschool-devops-tf" {
   acl           = "private"
   force_destroy = true
 
-  versioning {
-    enabled = true
-  }
-
   tags = {
     Name        = "Terraform State Bucket"
     Environment = "Dev"
+  }
+}
+
+resource "aws_s3_bucket_versioning" "rsschool-devops-tfwebsite" {
+  bucket = aws_s3_bucket.sschool-devops-tf.id
+  versioning_configuration {
+    status = "Enabled"
   }
 }
 
