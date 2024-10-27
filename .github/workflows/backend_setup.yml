@@ -43,22 +43,22 @@ jobs:
           terraform_version: 1.9.6
 
       - name: Terraform Init (without backend)
-        working-directory: ./backend-setup
+        working-directory: backend-setup
         run: |
           # Comment out backend configuration
           sed -i '/backend "s3"/,/}/s/^/#/' main.tf
           terraform init
 
       - name: Terraform check recoursively
-        working-directory: ./backend-setup
+        working-directory: backend-setup
         run: terraform fmt -check -recursive
 
       - name: Terraform plan
-        working-directory: ./backend-setup
+        working-directory: backend-setup
         run: terraform plan
 
       - name: Terraform apply (create backend resources)
-        working-directory: ./backend-setup
+        working-directory: backend-setup
         run: terraform apply -auto-approve
 
   config_backend:
@@ -66,18 +66,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Re-enable Backend Config
-        working-directory: ./backend-setup
+        working-directory: backend-setup
         run: |
           # Uncomment backend config and run again
           sed -i '/backend "s3"/,/}/s/^#//' main.tf
       - name: Reinitialize with Backend
-        working-directory: ./backend-setup
+        working-directory: backend-setup
         run: terraform init -reconfigure
       
       - name: Terraform plan
-        working-directory: ./backend-setup 
+        working-directory: backend-setup 
         run: terraform plan
 
       - name: Terraform apply (configure backend)
-        working-directory: ./backend-setup
+        working-directory: backend-setup
         run: terraform apply -auto-approve
