@@ -48,9 +48,9 @@ jobs:
       - name: Terraform Init (without backend)
         working-directory: backend-setup
         run: |
-          # Comment out backend configuration
-          ls -la && sed -i '/backend "s3"/,/}/s/^/#/' main.tf
-          terraform init -backend-config="backend-config.tfvars"
+          # Comment backend configuration
+          sed -i '/backend "s3"/,/}/s/^/#/' main.tf
+          terraform init
 
       # - name: Terraform check recoursively
       #   working-directory: backend-setup
@@ -67,15 +67,23 @@ jobs:
   config_backend:
     needs: create-backend
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    permissions:
+      id-token: write
+      contents: read
+      
     steps:
       - name: Re-enable Backend Config
         working-directory: backend-setup
         run: |
           # Uncomment backend config and run again
-          sed -i '/backend "s3"/,/}/s/^#//' main.tf
+          ls -la && sed -i '/backend "s3"/,/}/s/^#//' main.tf
+
       - name: Reinitialize with Backend
         working-directory: backend-setup
-        run: terraform init -reconfigure
+        run: terraform init -reconfigure -backend-config="backend-config.tfvars"
       
       - name: Terraform plan
         working-directory: backend-setup 
