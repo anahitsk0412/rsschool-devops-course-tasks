@@ -1,0 +1,81 @@
+name: Terraform Backend setup
+
+on:
+  push:
+    branches: [ "main" ]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of 2 jobs that setup the backend of the project
+jobs:
+  # This job creates all necessary resources to create the remote backend
+  create-backend:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      
+      - name: Debug AWS credentials
+        run: |
+            aws sts get-caller-identity
+
+      # Runs a single command using the runners shell
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.9.6
+
+      - name: Terraform Init (without backend)
+        working-directory: ./backend-setup
+        run: |
+          # Comment out backend configuration
+          sed -i '/backend "s3"/,/}/s/^/#/' main.tf
+          terraform init
+
+      - name: Terraform check recoursively
+        working-directory: ./backend-setup
+        run: terraform fmt -check -recursive
+
+      - name: Terraform plan
+        working-directory: ./backend-setup
+        run: terraform plan
+
+      - name: Terraform apply (create backend resources)
+        working-directory: ./backend-setup
+        run: terraform apply -auto-approve
+
+  config_backend:
+    needs: create-backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Re-enable Backend Config
+        working-directory: ./backend-setup
+        run: |
+          # Uncomment backend config and run again
+          sed -i '/backend "s3"/,/}/s/^#//' main.tf
+      - name: Reinitialize with Backend
+        working-directory: ./backend-setup
+        run: terraform init -reconfigure
+      
+      - name: Terraform plan
+        working-directory: ./backend-setup 
+        run: terraform plan
+
+      - name: Terraform apply (configure backend)
+        working-directory: ./backend-setup
+        run: terraform apply -auto-approve
