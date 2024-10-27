@@ -110,7 +110,7 @@ jobs:
 
       - name: Terraform apply (configure backend)
         working-directory: backend-setup
-        run: terraform apply -auto-approve
+        run: terraform apply -auto-approve -target=main.tf
       
       - name: Set up GitHub CLI
         run: |
