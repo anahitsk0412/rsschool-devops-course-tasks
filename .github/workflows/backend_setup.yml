@@ -50,11 +50,11 @@ jobs:
         run: |
           # Comment out backend configuration
           sed -i '/backend "s3"/,/}/s/^/#/' main.tf
-          terraform init
+          terraform init -backend-config="backend-config.tfvars"
 
-      # - name: Terraform check recoursively
-      #   working-directory: backend-setup
-      #   run: terraform fmt -check -recursive
+      - name: Terraform check recoursively
+        working-directory: backend-setup
+        run: terraform fmt -check -recursive
 
       - name: Terraform plan
         working-directory: backend-setup
@@ -84,3 +84,24 @@ jobs:
       - name: Terraform apply (configure backend)
         working-directory: backend-setup
         run: terraform apply -auto-approve
+      
+      - name: Set up GitHub CLI
+        run: |
+          sudo apt update
+          sudo apt install -y gh
+          
+      - name: Retrieve Value (Example with Terraform Output)
+        id: retrieve_value
+        run: |
+          # Example: Retrieve IAM Role ARN from Terraform output
+          role_arn=$(terraform output -raw github_actions_role_arn)
+          echo "role_arn=$role_arn" >> $GITHUB_ENV
+
+      - name: Store Value in GitHub Secrets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Retrieve the value from environment variable
+          role_arn=${{ env.role_arn }}
+          # Store in GitHub Secrets
+          echo "$role_arn" | gh secret set IAM_ROLE_ARN --repo ${{ github.repository }} -b
