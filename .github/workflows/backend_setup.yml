@@ -102,7 +102,7 @@ jobs:
 
       - name: Reinitialize with Backend
         working-directory: backend-setup
-        run: terraform init -reconfigure -backend-config="backend-config.tfvars"
+        run: terraform init -reconfigure -backend-config="backend_config.tfvars"
       
       - name: Terraform plan
         working-directory: backend-setup 
