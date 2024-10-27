@@ -5,13 +5,13 @@ variable "aws_region" {
 }
 
 variable "s3_bucket_name" {
-    description = "S3 bucket to hold terraform remote state"
-    type = string
-    default = "rsschool-devops-tf" 
+  description = "S3 bucket to hold terraform remote state"
+  type        = string
+  default     = "rsschool-devops-tf"
 }
 
 variable "dynamodb_table_name" {
-    description = "DynamoDB table name to keep remote state locks"
-    type = string
-    default = "tf-state-lock-dynamodb" 
+  description = "DynamoDB table name to keep remote state locks"
+  type        = string
+  default     = "tf-state-lock-dynamodb"
 }
