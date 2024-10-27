@@ -70,7 +70,7 @@ jobs:
           # Example: Retrieve IAM Role ARN from Terraform output
           role_arn=$(terraform output github_actions_role_arn)
           echo $role_arn
-          echo "role_arn=$role_arn" >> $GITHUB_ENV
+          echo "role_arn=$role_arn >> $GITHUB_OUTPUT"
       
       - name: Set up GitHub CLI
         run: |
