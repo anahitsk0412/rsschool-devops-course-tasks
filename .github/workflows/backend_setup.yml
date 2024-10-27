@@ -73,13 +73,16 @@ jobs:
     permissions:
       id-token: write
       contents: read
-      
+
     steps:
+      - name: Check dir and content
+        run: pwd && ls -la
+        
       - name: Re-enable Backend Config
-        working-directory: backend-setup
+        working-directory: "./backend-setup"
         run: |
           # Uncomment backend config and run again
-          ls -la && sed -i '/backend "s3"/,/}/s/^#//' main.tf
+          sed -i '/backend "s3"/,/}/s/^#//' main.tf
 
       - name: Reinitialize with Backend
         working-directory: backend-setup
