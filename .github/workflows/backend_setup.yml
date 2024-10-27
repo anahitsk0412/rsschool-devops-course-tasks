@@ -61,13 +61,10 @@ jobs:
         run: terraform plan
 
       - name: Terraform apply (create backend resources)
+        id: output_value
         working-directory: backend-setup
-        run: terraform apply -auto-approve
-          
-      - name: Retrieve Value (Example with Terraform Output)
-        id: retrieve_value
         run: |
-          # Example: Retrieve IAM Role ARN from Terraform output
+          terraform apply -auto-approve
           role_arn=$(terraform output github_actions_role_arn)
           echo $role_arn
           echo "role_arn=$role_arn >> $GITHUB_OUTPUT"
@@ -84,7 +81,7 @@ jobs:
           # Retrieve the value from environment variable
           role_arn=${{ env.role_arn }}
           # Store in GitHub Secrets
-          echo "$role_arn" | gh secret set IAM_ROLE_ARN --repo ${{ github.repository }} --body "$role_arn"
+          echo "$role_arn" | gh secret set IAM_ROLE_ARN --body "[${{steps.output_value.outputs.role_arn}}]"
 
       - name: Reinitialize with Backend
         working-directory: backend-setup
