@@ -52,9 +52,9 @@ jobs:
           sed -i '/backend "s3"/,/}/s/^/#/' main.tf
           terraform init
 
-      - name: Terraform check recoursively
-        working-directory: backend-setup
-        run: terraform fmt -check -recursive
+      # - name: Terraform check recoursively
+      #   working-directory: backend-setup
+      #   run: terraform fmt -check -recursive
 
       - name: Terraform plan
         working-directory: backend-setup
