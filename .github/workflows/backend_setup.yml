@@ -49,7 +49,7 @@ jobs:
         working-directory: backend-setup
         run: |
           # Comment out backend configuration
-          sed -i '/backend "s3"/,/}/s/^/#/' main.tf
+          ls -la && sed -i '/backend "s3"/,/}/s/^/#/' main.tf
           terraform init -backend-config="backend-config.tfvars"
 
       # - name: Terraform check recoursively
