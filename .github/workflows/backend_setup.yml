@@ -63,7 +63,7 @@ jobs:
       - name: Terraform apply (create backend resources)
         working-directory: backend-setup
         run: terraform apply -auto-approve
-      
+
       - name: Set up GitHub CLI
         run: |
           sudo apt update
@@ -83,53 +83,18 @@ jobs:
           # Retrieve the value from environment variable
           role_arn=${{ env.role_arn }}
           # Store in GitHub Secrets
-          echo "$role_arn" | gh secret set IAM_ROLE_ARN --repo ${{ github.repository }} -b
-
-  config_backend:
-    # needs: create-backend
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-    permissions:
-      id-token: write
-      contents: read
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Check dir and content
-        run: pwd && ls -la
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      # Runs a single command using the runners shell
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.9.6
-
-      # - name: Re-enable Backend Config
-      #   working-directory: backend-setup
-      #   run: |
-      #     # Uncomment backend config and run again
-      #     sed -i '/backend "s3"/,/}/s/^#//' main.tf
+          echo "$role_arn" | gh secret set IAM_ROLE_ARN --repo ${{ github.repository }} --body "$role_arn"
 
       - name: Reinitialize with Backend
         working-directory: backend-setup
         run: terraform init -reconfigure -backend-config="backend_config.tfvars"
-      
+        
       - name: Terraform plan
         working-directory: backend-setup 
         run: terraform plan
-
+  
       - name: Terraform apply (configure backend)
         working-directory: backend-setup
         run: terraform apply -auto-approve -target=main.tf
       
+     
