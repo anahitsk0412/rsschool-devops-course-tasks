@@ -90,7 +90,7 @@ jobs:
 
       - name: Reinitialize with Backend
         working-directory: backend-setup
-        run: terraform init -reconfigure -backend-config="backend_config.tfvars"
+        run: terraform init -migrate-state -force-copy -backend-config="backend_config.tfvars"
         
       - name: Terraform plan
         working-directory: backend-setup 
@@ -98,5 +98,5 @@ jobs:
   
       - name: Terraform apply (configure backend)
         working-directory: backend-setup
-        run: terraform apply -auto-approve -target=main.tf
+        run: terraform apply -auto-approve
 
