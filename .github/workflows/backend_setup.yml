@@ -68,6 +68,10 @@ jobs:
           role_arn=$(terraform output github_actions_role_arn)
           echo $role_arn
           echo "role_arn=$role_arn >> $GITHUB_OUTPUT"
+
+      - name: Migrate state
+        working-directory: backend-setup
+        run: terraform init -migrate-state
       
       # - name: Set up GitHub CLI
       #   run: |
@@ -82,7 +86,7 @@ jobs:
         #   # Retrieve the value from environment variable
         #   role_arn=${{ env.role_arn }}
         #   # Store in GitHub Secrets
-        #   echo "$role_arn" | gh secret set IAM_ROLE_ARN --body "[${{steps.output_value.outputs.role_arn}}]"
+        #   echo "$role_arn" | gh secret set IAM_ROLE_ARN --body "
 
       - name: Reinitialize with Backend
         working-directory: backend-setup
@@ -95,3 +99,4 @@ jobs:
       - name: Terraform apply (configure backend)
         working-directory: backend-setup
         run: terraform apply -auto-approve -target=main.tf
+
