@@ -68,10 +68,6 @@ jobs:
           role_arn=$(terraform output github_actions_role_arn)
           echo $role_arn
           echo "role_arn=$role_arn >> $GITHUB_OUTPUT"
-
-      - name: Migrate state
-        working-directory: backend-setup
-        run: terraform init -migrate-state
       
       # - name: Set up GitHub CLI
       #   run: |
@@ -98,5 +94,5 @@ jobs:
   
       - name: Terraform apply (configure backend)
         working-directory: backend-setup
-        run: terraform apply -auto-approve
+        run: terraform apply -auto-approve -target=main.tf
 
