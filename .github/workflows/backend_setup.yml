@@ -51,6 +51,7 @@ jobs:
           # Comment backend configuration
           sed -i '/backend "s3"/,/}/s/^/#/' main.tf
           terraform init
+          terraform state pull state/terraform.tfstate
 
       # - name: Terraform check recoursively
       #   working-directory: backend-setup
