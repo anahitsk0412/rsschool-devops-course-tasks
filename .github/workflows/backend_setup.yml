@@ -1,0 +1,99 @@
+name: Terraform Backend setup
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of 2 jobs that setup the backend of the project
+jobs:
+  # This job creates all necessary resources to create the remote backend
+  create-backend:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check dir and content
+        run: pwd && ls -la
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      
+      - name: Debug AWS credentials
+        run: |
+            aws sts get-caller-identity
+
+      # Runs a single command using the runners shell
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.9.6
+
+      - name: Terraform Init (without backend)
+        working-directory: backend-setup
+        run: |
+          # Comment backend configuration
+          sed -i '/backend "s3"/,/}/s/^/#/' main.tf
+          terraform init
+          terraform state pull state/terraform.tfstate
+
+      # - name: Terraform check recoursively
+      #   working-directory: backend-setup
+      #   run: terraform fmt -check -recursive
+
+      - name: Terraform plan
+        working-directory: backend-setup
+        run: terraform plan
+
+      - name: Terraform apply (create backend resources)
+        id: output_value
+        working-directory: backend-setup
+        run: |
+          terraform apply -auto-approve
+          role_arn=$(terraform output github_actions_role_arn)
+          echo $role_arn
+          echo "role_arn=$role_arn >> $GITHUB_OUTPUT"
+      
+      # - name: Set up GitHub CLI
+      #   run: |
+      #       sudo apt update
+      #       sudo apt install -y gh
+
+      - name: Store Value in GitHub Secrets
+        uses: actions/checkout@v4
+        env:
+          IAM_ROLE_ARN: ${{steps.output_value.outputs.role_arn}}
+        # run: |
+        #   # Retrieve the value from environment variable
+        #   role_arn=${{ env.role_arn }}
+        #   # Store in GitHub Secrets
+        #   echo "$role_arn" | gh secret set IAM_ROLE_ARN --body "
+
+      - name: Reinitialize with Backend
+        working-directory: backend-setup
+        run: terraform init -migrate-state -force-copy -backend-config="backend_config.tfvars"
+        
+      - name: Terraform plan
+        working-directory: backend-setup 
+        run: terraform plan
+  
+      - name: Terraform apply (configure backend)
+        working-directory: backend-setup
+        run: terraform apply -auto-approve -target=main.tf
+
