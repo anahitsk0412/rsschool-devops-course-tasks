@@ -69,19 +69,20 @@ jobs:
           echo $role_arn
           echo "role_arn=$role_arn >> $GITHUB_OUTPUT"
       
-      - name: Set up GitHub CLI
-        run: |
-            sudo apt update
-            sudo apt install -y gh
+      # - name: Set up GitHub CLI
+      #   run: |
+      #       sudo apt update
+      #       sudo apt install -y gh
 
       - name: Store Value in GitHub Secrets
+        uses: actions/checkout@v4
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # Retrieve the value from environment variable
-          role_arn=${{ env.role_arn }}
-          # Store in GitHub Secrets
-          echo "$role_arn" | gh secret set IAM_ROLE_ARN --body "[${{steps.output_value.outputs.role_arn}}]"
+          IAM_ROLE_ARN: ${{steps.output_value.outputs.role_arn}}
+        # run: |
+        #   # Retrieve the value from environment variable
+        #   role_arn=${{ env.role_arn }}
+        #   # Store in GitHub Secrets
+        #   echo "$role_arn" | gh secret set IAM_ROLE_ARN --body "[${{steps.output_value.outputs.role_arn}}]"
 
       - name: Reinitialize with Backend
         working-directory: backend-setup
